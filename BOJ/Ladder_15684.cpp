@@ -5,7 +5,7 @@ using namespace std;
 
 //BOJ_사다리조작 #15684
 
-int N,M,H,mini=4; 
+int N,M,H,mini=2147483647; 
 bool visit[31][31];
 
 bool PlayGame(){
@@ -20,24 +20,22 @@ bool PlayGame(){
 	return true;
 }
 
-void DFS(int idx,int goal, int cnt){
-	if(mini!=4) return;
+void DFS(int idx, int cnt){
+	//3을 초과한 경우. 
+	if(cnt>3) return;
 	
 	//정답인 경우.
-	if(goal==cnt){
-		if(PlayGame()){
-			mini=goal;
-			return;
-		}
+	if(PlayGame()){
+		mini=min(mini,cnt);
+		return;
 	} 
-
+	
 	//추가할 선 고르기.
-	// for(int i=idx; i<=H; i++) -> 중복없는 조합! 
 	for(int i=idx; i<=H; i++){
 		for(int j=1; j<=N; j++){
 			if(visit[i][j] || visit[i][j-1] || visit[i][j+1]) continue;
 			visit[i][j]=true;
-			DFS(i,goal,cnt+1);
+			DFS(i,cnt+1);
 			visit[i][j]=false;
 		}
 	} 
@@ -47,7 +45,8 @@ int main(){
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL);
     cout.tie(NULL);
-	freopen("input.txt", "rt", stdin);
+	//freopen("input.txt", "rt", stdin);
+	memset(visit,false,sizeof(visit));
 	cin>>N>>M>>H;
 	for(int i=0; i<M; i++){
 		int a,b;
@@ -55,15 +54,9 @@ int main(){
 		visit[a][b]=true;
 	}
 	
-	for(int i=0; i<4; i++){
-		DFS(1,i,0);
-		if(mini!=4){
-			cout<<mini;
-			break;
-		}
-	} 
-	
-	if(mini==4) cout<<-1;
+	DFS(1,0);
+	if(mini==2147483647) cout<<-1;
+	else cout<<mini;
 	
 	return 0;
 }
